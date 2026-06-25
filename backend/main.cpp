@@ -19,8 +19,6 @@ struct RouteResult
     int time;
 
     int fare;
-
-    int interchanges;
 };
 
 unordered_map <string, unordered_map<string,string>> lineMap;
@@ -47,30 +45,31 @@ void loadConnections()
 
     string line;
 
-    while(getline(file, line))
-    {
-        stringstream ss(line);
+while(getline(file, line))
+{
+    cout << line << endl;
 
-        string src;
-        string dest;
-        string distance;
-        string time;
-        string metroLine;
+    stringstream ss(line);
 
-        getline(ss, src, ',');
-        getline(ss, dest, ',');
-        getline(ss, distance, ',');
-        getline(ss, time, ',');
-        getline(ss, metroLine, ',');
+    string src, dest, distance, time, metroLine;
 
-        addConnection(
-            src,
-            dest,
-            stoi(distance),
-            stoi(time),
-            metroLine
-        );
-    }
+    getline(ss, src, ',');
+    getline(ss, dest, ',');
+    getline(ss, distance, ',');
+    getline(ss, time, ',');
+    getline(ss, metroLine);
+
+    cout << "Distance = " << distance << endl;
+    cout << "Time = " << time << endl;
+
+    addConnection(
+        src,
+        dest,
+        stoi(distance),
+        stoi(time),
+        metroLine
+    );
+}
 
     file.close();
 }
@@ -120,32 +119,6 @@ string selectStation()
     }
 
     return stations[choice - 1];
-}
-
-int countInterchanges(
-    vector<string>& path
-) {
-    if(path.size() < 2)
-        return 0;
-
-    int changes = 0;
-
-    string currentLine =
-        lineMap[path[0]][path[1]];
-
-    for(int i=1;i<path.size()-1;i++) {
-
-        string nextLine =
-            lineMap[path[i]][path[i+1]];
-
-        if(nextLine != currentLine) {
-
-            changes++;
-            currentLine = nextLine;
-        }
-    }
-
-    return changes;
 }
 
 int calculateFare(int distance)
@@ -218,7 +191,6 @@ if(cost[destination] == INT_MAX)
     emptyResult.distance = -1;
     emptyResult.time = -1;
     emptyResult.fare = -1;
-    emptyResult.interchanges = -1;
 
     return emptyResult;
 }
@@ -259,20 +231,12 @@ if(cost[destination] == INT_MAX)
     }
 
 
-    if(useTime)
-        cout << "FASTEST ROUTE\n";
-    else
-        cout << "SHORTEST DISTANCE ROUTE\n";
-
-
     RouteResult result;
 
     result.path = path;
     result.distance = totalDistance;
     result.time = totalTime;
     result.fare = calculateFare(totalDistance);
-    result.interchanges =
-        countInterchanges(path);
 
     return result;
 }
@@ -310,111 +274,8 @@ void printRoute(
          << route.fare
          << "\n";
 
-    cout << "Interchanges  : "
-         << route.interchanges
-         << "\n";
 }
 
-void findMinInterchangeRoute(
-    string source,
-    string destination
-)
-{
-    unordered_map<string,int> changes;
-    unordered_map<string,string> parent;
-    unordered_map<string,string> currentLine;
-
-    for(auto &station : graph)
-    {
-        changes[station.first] = INT_MAX;
-    }
-
-    priority_queue<
-        pair<int,string>,
-        vector<pair<int,string>>,
-        greater<pair<int,string>>
-    > pq;
-
-    changes[source] = 0;
-
-    pq.push({0, source});
-
-    while(!pq.empty())
-    {
-        auto [currChanges, currStation] = pq.top();
-        pq.pop();
-
-        if(currChanges > changes[currStation])
-            continue;
-
-        for(auto &edge : graph[currStation])
-        {
-            int extraChange = 0;
-
-            if(currentLine.find(currStation) != currentLine.end())
-            {
-                if(currentLine[currStation] != edge.line)
-                {
-                    extraChange = 1;
-                }
-            }
-
-            int newChanges =
-                currChanges + extraChange;
-
-            if(newChanges < changes[edge.destination])
-            {
-                changes[edge.destination] =
-                    newChanges;
-
-                parent[edge.destination] =
-                    currStation;
-
-                currentLine[edge.destination] =
-                    edge.line;
-
-                pq.push({
-                    newChanges,
-                    edge.destination
-                });
-            }
-        }
-    }
-
-    if(changes[destination] == INT_MAX)
-    {
-        cout << "No Route Found\n";
-        return;
-    }
-
-    vector<string> path;
-
-    string curr = destination;
-
-    while(curr != source)
-    {
-        path.push_back(curr);
-        curr = parent[curr];
-    }
-
-    path.push_back(source);
-
-    reverse(path.begin(), path.end());
-
-    cout << "MINIMUM INTERCHANGE ROUTE\n";
-
-    for(int i=0;i<path.size();i++)
-    {
-        cout << path[i];
-
-        if(i != path.size()-1)
-            cout << "\n↓\n";
-    }
-
-    cout << "\n\nInterchanges : "
-         << changes[destination]
-         << "\n";
-}
 
 void showNetworkStats()
 {
@@ -489,18 +350,67 @@ void compareRoutes(
         "FASTEST ROUTE"
     );
 
-    cout << "\n\n";
-
-    findMinInterchangeRoute(
-        source,
-        destination
-    );
 }
 
-int main()
+void printJSON(RouteResult route)
+{
+    cout << "{";
+
+    cout << "\"path\":[";
+
+    for(int i=0;i<route.path.size();i++)
+    {
+        cout << "\"" << route.path[i] << "\"";
+
+        if(i!=route.path.size()-1)
+            cout << ",";
+    }
+
+    cout << "],";
+
+    cout << "\"distance\":"
+         << route.distance
+         << ",";
+
+    cout << "\"time\":"
+         << route.time
+         << ",";
+
+    cout << "\"fare\":"
+         << route.fare
+         << ",";
+
+    cout << "}";
+}
+
+int main(int argc, char* argv[])
 {
 
 loadConnections();
+if(argc == 4)
+{
+    string source = argv[1];
+    string destination = argv[2];
+    string type = argv[3];
+
+    if(type == "distance")
+    {
+        RouteResult route =
+            findRoute(source, destination, false);
+
+        printJSON(route);
+    }
+
+    else if(type == "time")
+    {
+        RouteResult route =
+            findRoute(source, destination, true);
+
+        printJSON(route);
+    }
+    return 0;
+}
+
 displayStations();
 
     while(true)
@@ -510,10 +420,9 @@ displayStations();
         cout << "1. Show All Stations\n";
         cout << "2. Shortest Distance Route\n";
         cout << "3. Fastest Route\n";
-        cout << "4. Minimum Interchange Route\n";
-        cout << "5. Compare All Routes\n";
-        cout << "6. Network Statistics\n";
-        cout << "7. Exit\n";
+        cout << "4. Compare All Routes\n";
+        cout << "5. Network Statistics\n";
+        cout << "6. Exit\n";
 
         cout << "\nEnter Choice: ";
 
@@ -591,42 +500,16 @@ displayStations();
 
             if(source.empty() || destination.empty())
                 continue;
-            RouteResult route =
-                findRoute(
-                    source,
-                    destination,
-                    false
-                );
-
-            printRoute(
-                route,
-                source,
-                destination,
-                "fastest time ROUTE"
-            );
-        }
-        else if(choice == 5)
-        {
-            displayStations();
-
-            cout << "\nSelect Source Station\n";
-            string source = selectStation();
-
-            cout << "\nSelect Destination Station\n";
-            string destination = selectStation();
-
-            if(source.empty() || destination.empty())
-                continue;
 
             compareRoutes(
                 source,
                 destination
             );
         }
-        else if(choice==6){
+        else if(choice==5){
             showNetworkStats();
         }
-        else if(choice == 7)
+        else if(choice == 6)
         {
             cout << "\nThank you for using Metro Planner!\n";
             break;
