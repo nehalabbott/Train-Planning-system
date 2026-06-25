@@ -351,70 +351,57 @@ void compareRoutes(
     );
 
 }
-
 void printJSON(RouteResult route)
 {
     cout << "{";
-
     cout << "\"path\":[";
-
     for(int i=0;i<route.path.size();i++)
     {
         cout << "\"" << route.path[i] << "\"";
-
         if(i!=route.path.size()-1)
             cout << ",";
     }
-
     cout << "],";
-
-    cout << "\"distance\":"
-         << route.distance
-         << ",";
-
-    cout << "\"time\":"
-         << route.time
-         << ",";
-
-    cout << "\"fare\":"
-         << route.fare
-         << ",";
-
+    cout << "\"distance\":" << route.distance << ",";
+    cout << "\"time\":" << route.time << ",";
+    
+    // CHANGED: Removed the trailing comma here
+    cout << "\"fare\":" << route.fare; 
+    
     cout << "}";
 }
 
 int main(int argc, char* argv[])
 {
+    // Load data first
+    loadConnections();
 
-loadConnections();
-if(argc == 4)
-{
-    string source = argv[1];
-    string destination = argv[2];
-    string type = argv[3];
-
-    if(type == "distance")
+    // IF ARGUMENTS ARE PASSED: Act as an API worker
+    if (argc > 1) 
     {
-        RouteResult route =
-            findRoute(source, destination, false);
+        if (argc < 4) {
+            cout << "{\"error\": \"Missing arguments. Expected: ./metro <source> <dest> <optimization>\"}";
+            return 1;
+        }
 
+        string source = argv[1];
+        string destination = argv[2];
+        string optimization = argv[3]; // "fastest" or "shortest"
+
+        // Map optimization flag to your findRoute boolean
+        // Assuming true = fastest (time), false = shortest (distance)
+        bool optimizeTime = (optimization == "fastest");
+
+        // Run your existing routing logic
+        RouteResult route = findRoute(source, destination, optimizeTime);
+
+        // Print the clean, valid JSON output
         printJSON(route);
+        return 0; 
     }
 
-    else if(type == "time")
-    {
-        RouteResult route =
-            findRoute(source, destination, true);
-
-        printJSON(route);
-    }
-    return 0;
-}
-
-displayStations();
-
-    while(true)
-    {
+    // FALLBACK: Interactive CLI Menu if no arguments are provided
+    while(true){
         cout << "     DELHI METRO ROUTE PLANNER\n";
 
         cout << "1. Show All Stations\n";
