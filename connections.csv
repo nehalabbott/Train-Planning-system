@@ -1,0 +1,37 @@
+Rajiv Chowk,New Delhi,2,3,Yellow
+New Delhi,Kashmere Gate,5,8,Yellow
+Kashmere Gate,Yamuna Bank,3,4,Blue
+Rajiv Chowk,Yamuna Bank,6,8,Blue
+Yamuna Bank,Botanical Garden,10,15,Blue
+Botanical Garden,Noida Sector 62,8,12,Blue
+Rajiv Chowk,Moti Nagar,9,14,Blue
+Moti Nagar,Janakpuri West,7,11,Blue
+Janakpuri West,Dwarka Sector 21,6,9,Blue
+Rajiv Chowk,Dwarka Sector 21,30,12,Airport Express
+Rajiv Chowk,Central Secretariat,3,4,Yellow
+Central Secretariat,INA,2,3,Yellow
+INA,AIIMS,2,3,Yellow
+AIIMS,Green Park,2,3,Yellow
+Green Park,Hauz Khas,3,4,Yellow
+Hauz Khas,Malviya Nagar,2,3,Yellow
+Malviya Nagar,Saket,2,3,Yellow
+Central Secretariat,Mandi House,3,4,Violet
+Mandi House,Lajpat Nagar,4,5,Violet
+Lajpat Nagar,Kalkaji Mandir,4,5,Violet
+Kalkaji Mandir,Nehru Place,2,3,Violet
+Rajiv Chowk,Karol Bagh,4,5,Blue
+Karol Bagh,Jhandewalan,2,3,Blue
+Jhandewalan,Ramakrishna Ashram Marg,2,3,Blue
+Ramakrishna Ashram Marg,Rajiv Chowk,2,3,Blue
+Kashmere Gate,Chandni Chowk,2,3,Yellow
+Chandni Chowk,New Delhi,2,3,Yellow
+Mandi House,Yamuna Bank,4,5,Blue
+Botanical Garden,Kalkaji Mandir,5,6,Magenta
+Kalkaji Mandir,Hauz Khas,6,7,Magenta
+Janakpuri West,Hauz Khas,12,15,Magenta
+INA,Lajpat Nagar,3,4,Pink
+Lajpat Nagar,Mandi House,5,6,Pink
+Dwarka Sector 21,Dwarka,3,4,Blue
+Dwarka,Dwarka Mor,3,4,Blue
+Dwarka Mor,Uttam Nagar West,3,4,Blue
+Uttam Nagar West,Janakpuri West,2,3,Blue
